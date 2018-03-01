@@ -26,7 +26,7 @@
                 <h4 class="modal-title" id="myModalLabel">Modal title</h4>
             </div>
             <div class="modal-body">
-                <form action="update_task.php" method="post">
+                <form id="form" action="update_task.php" method="post">
                     <div class="row">
                         <div class="col-md-12" style="margin-bottom: 5px;;">
                             <input id="InputTaskName" type="text" placeholder="Task Name" class="form-control">
@@ -88,15 +88,45 @@
     });
     $('#saveTask').click(function() {
         //Assignment: Implement this functionality
-        alert('Save... Id:'+currentTaskId);
-        $('#myModal').modal('hide');
-        updateTaskList();
+       	var taskName = $("#InputTaskName").val();
+		var taskDesc = $("#InputTaskDescription").val();
+		if(taskName=='' && taskDesc=='')
+		{
+		alert("Please fill out the form");
+		}
+		else if(taskName=='' && taskDesc!==''){alert('Task name field is required!')}
+		else if(taskDesc=='' && taskName!==''){alert('Description field is required!')}
+		else{
+			$.post("update_task.php", 
+			{ 
+				TaskName:taskName,
+				TaskDescription:taskDesc
+			},
+			function(response){ 
+				alert('Save Task... Task Id:'+ currentTaskId + response);
+		        $('#myModal').modal('hide');
+		        updateTaskList();
+			});
+		}      
+        
     });
     $('#deleteTask').click(function() {
         //Assignment: Implement this functionality
-        alert('Delete... Id:'+currentTaskId);
+         var conf = confirm("Are you sure, do you really want to delete User?");
+	    if (conf == true) {
+	        $.post("delete_task.php", {
+	                id: currentTaskId
+	            },
+	            function (data, status) {
+	                // reload Users by using readRecords();
+	                  alert('Delete... Id:'+currentTaskId+data+status);
         $('#myModal').modal('hide');
-        updateTaskList();
+	                updateTaskList();
+	            }
+	        );
+	    }
+      
+        
     });
     function updateTaskList() {
         $.post("list_tasks.php", function( data ) {

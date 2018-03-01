@@ -19,16 +19,22 @@ class Task {
         if (!$this->LoadFromId($Id))
             $this->Create();
     }
+    /**
+     * 
+     * 
+     */
     protected function Create() {
         // This function needs to generate a new unique ID for the task
         // Assignment: Generate unique id for the new task
+    	
         $this->TaskId = $this->getUniqueId();
         $this->TaskName = 'New Task';
         $this->TaskDescription = 'New Description';
     }
     protected function getUniqueId() {
         // Assignment: Code to get new unique ID
-        return -1; // Placeholder return for now
+        $id  = uniqid();
+        return $id; // Placeholder return for now
     }
     protected function LoadFromId($Id = null) {
         if ($Id) {
@@ -37,11 +43,28 @@ class Task {
             return null;
     }
 
-    public function Save() {
+    public function Save($data, $form_data, $last_task_id) {
         //Assignment: Code to save task here
+        $task = array();
+        $task['TaskId'] 			= ++$last_task_id;
+        $task['TaskName'] 			= $form_data['TaskName'];
+        $task['TaskDescription'] 	= $form_data['TaskDescription'];
+        $data 						= array_values($data);
+    	array_push($data, $task);
+    	file_put_contents("Task_Data.txt", json_encode($data));
     }
-    public function Delete() {
+    public function Delete($id) {
         //Assignment: Code to delete task here
+    	$data = file_get_contents('Task_Data.txt');
+    	$data = json_decode($data, true);
+    	$jsonfile = $data;
+    	$jsonfile = $jsonfile[$id];
+    	
+    	if ($jsonfile) {
+    		unset($data[$id]);
+    		$data = array_values($data);
+    		file_put_contents("Task_Data.txt", json_encode($data));
+    	}
     }
 }
 ?>
